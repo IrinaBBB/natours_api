@@ -32,7 +32,6 @@ coverage/
 # MongoDB database files (if using local db storage)
 *.lock
 dump/
-data/
 *.ns
 
 # IntelliJ IDEA specific
