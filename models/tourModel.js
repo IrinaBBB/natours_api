@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const slugify = require('slugify')
 
 const tourSchema = new mongoose.Schema({
     name: {
@@ -6,6 +7,7 @@ const tourSchema = new mongoose.Schema({
         required: [true, 'A tour must have a name'],
         unique: true,
     },
+    slug: String,
     duration: {
         type: Number,
         required: [true, 'A tour must have a duration'],
@@ -51,6 +53,10 @@ const tourSchema = new mongoose.Schema({
         select: false,
     },
     startDates: [Date],
+    secretTour: {
+        type: Boolean,
+        default: false,
+    },
 }, {
     toJSON: {
         virtuals: true,
@@ -64,6 +70,34 @@ tourSchema.virtual('durationWeeks')
     .get(function() {
         return this.duration / 7
     })
+
+// DOCUMENT MIDDLEWARE: runs before the save() and create() command is executed
+tourSchema.pre('save', function(next) {
+    this.slug = slugify(this.name, { lower: true })
+    next()
+})
+
+// Query Middleware
+tourSchema.pre(/^find/, function(next) {
+    this.start = Date.now()
+    this.find({ secretTour: { $ne: true } })
+    next()
+})
+
+tourSchema.post(/^find/, function(docs, next) {
+    console.log(`Query took ${Date.now() - this.start} milliseconds`)
+    console.log(docs)
+    next()
+})
+
+// Aggregation Middleware
+tourSchema.pre('aggregate', function(next) {
+    this.pipeline().unshift({
+        $match: { secretTour: { $ne: true } },
+    })
+    console.log(this.pipeline)
+    next()
+})
 
 const Tour = mongoose.model('Tour', tourSchema)
 
