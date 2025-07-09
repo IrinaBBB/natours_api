@@ -3,6 +3,7 @@ const APIFeatures = require('./../utils/apiFeatures.js')
 const catchAsync = require('./../utils/catchAsync.js')
 const AppError = require('./../utils/appError.js')
 
+
 exports.aliasTopTours = (req, res, next) => {
     req.url =
         '/?sort=-ratingsAverage,price&fields=ratingsAverage,price,name,difficulty,summary&limit=5'
