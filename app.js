@@ -53,6 +53,17 @@ app.use(mongoSanitize())
 app.use(xxs())
 
 // Prevent parameter pollution
+// app.use(hpp({
+//     whitelist: [
+//         'duration',
+//         'ratingsQuality',
+//         'ratingsAverage',
+//         'maxGroupSize',
+//         'difficulty',
+//         'price',
+//     ],
+// }))
+
 app.use(hpp())
 
 app.use(express.static(`${__dirname}/public`))
